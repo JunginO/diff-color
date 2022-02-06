@@ -1,16 +1,27 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import styled from "styled-components";
-// / style="width: 176px; height: 176px; margin: 2px; background-color: rgb(125, 127, 147);
+import { timerInitialState, timerReducer } from "./TimerReducer";
+
 interface IBox {
   num: number;
   diff: number;
   current: number;
   onClick: any;
+  colors: number;
+  colordiff: number;
 }
 
 const Box = styled.div<IBox>`
-  background: ${(props) => (props.current === props.diff ? "red" : "black")};
+  background: ${(props) =>
+    props.current === props.diff
+      ? "hsla(" + props.colors.toString() + ", 100%, 59%, 1)"
+      : "hsla(" +
+        props.colors.toString() +
+        ", 100%, " +
+        props.colordiff.toString() +
+        "%, 1)"};
+
   width: ${(props) => props.num}px;
   height: ${(props) => props.num}px;
   display: inline-block;
@@ -18,32 +29,51 @@ const Box = styled.div<IBox>`
 `;
 
 const Boxes = () => {
-  const [stage, setStage] = useState(1);
-  const [cards, setCards] = useState(4);
-  const [boxWidth, setBoxWidth] = useState(176);
   const [ans, setAns] = useState(0);
+  const [boxWidth, setBoxwidth] = useState(176);
+  const [color, setColor] = useState(0);
+  const [{ time, score, stage, cards, colordiff }, dispatch] = useReducer(
+    timerReducer,
+    timerInitialState
+  );
+  useEffect(() => {
+    const countdown = setInterval(() => {
+      if (time > 0) {
+        dispatch({ type: "TIMEPASS" });
+      } else {
+        alert("GAME OVER!\n 스테이지:" + stage + ", 점수:" + score);
+        clearInterval(countdown);
+        dispatch({ type: "RESET" });
+      }
+    }, 1000);
+    return () => clearInterval(countdown);
+  }, [time]);
+
   const clicks = () => {
-    setStage((stage) => stage + 1);
-    setCards(Math.pow(Math.round((stage + 1 + 0.5) / 2) + 1, 2));
+    dispatch({ type: "CORRECT" });
   };
   useEffect(() => {
-    setBoxWidth(360 / Math.sqrt(cards) - 4);
+    setBoxwidth(360 / Math.sqrt(cards) - 4);
     setAns(Math.floor(Math.random() * cards));
+    setColor(Math.round(Math.random() * 360));
   }, [stage, cards]);
   const boxClicked = (index: number, ans: number) => {
-    {
-      index === ans ? console.log("correct!") : console.log("wrong!");
-    }
+    index === ans ? clicks() : dispatch({ type: "WRONGANSWER" });
   };
   return (
     <div>
-      <p>stage:{stage}</p>
-      <button onClick={clicks}>{cards}</button>
+      <div>
+        <p>
+          스테이지:{stage}, 남은 시간:{time}, 점수:{score}
+        </p>
+      </div>
 
       <div style={{ width: "360px", height: "360px" }}>
         {[...Array(cards)].map((n, index) => {
           return (
             <Box
+              colordiff={colordiff}
+              colors={color}
               num={boxWidth}
               diff={ans}
               current={index}

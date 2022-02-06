@@ -1,10 +1,9 @@
 import React from "react";
-import Timer from "./components/Timer";
-
+import Boxes from "./components/Boxes";
 function App() {
   return (
     <div className="App">
-      <Timer />
+      <Boxes />
     </div>
   );
 }
