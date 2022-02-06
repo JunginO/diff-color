@@ -47,7 +47,7 @@ const Boxes = () => {
       }
     }, 1000);
     return () => clearInterval(countdown);
-  }, [time]);
+  }, [time, stage, score]);
 
   const clicks = () => {
     dispatch({ type: "CORRECT" });
