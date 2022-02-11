@@ -1,8 +1,8 @@
 import styled from "styled-components";
 interface IBox {
-  num: number;
-  diff: number;
-  current: number;
+  width: number;
+  diffrentBox: number;
+  currentBox: number;
   onClick: any;
   colors: number;
   colordiff: number;
@@ -10,7 +10,7 @@ interface IBox {
 
 const Box = styled.div<IBox>`
   background: ${(props) =>
-    props.current === props.diff
+    props.currentBox === props.diffrentBox
       ? "hsl(" + props.colors.toString() + ", 100%, 70%)"
       : "hsl(" +
         props.colors.toString() +
@@ -18,8 +18,8 @@ const Box = styled.div<IBox>`
         props.colordiff.toString() +
         "%)"};
 
-  width: ${(props) => props.num}px;
-  height: ${(props) => props.num}px;
+  width: ${(props) => props.width}px;
+  height: ${(props) => props.width}px;
   display: inline-block;
   margin: 2px;
 `;
